@@ -242,8 +242,6 @@ namespace Server
 
         public void reserver(int idOuvrage,int idUser)
         {
-            
-
             try
             {
                 command.CommandText = "INSERT INTO emprunt (idUser, idOuvrage)"

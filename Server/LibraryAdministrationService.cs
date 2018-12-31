@@ -69,5 +69,43 @@ namespace Server
             conn.Close();
             return list;
         }
+        public void reserver(int idOuvrage, int idUser)
+        {
+            try
+            {
+                command.CommandText = "INSERT INTO emprunt (idUser, idOuvrage, confirme)"
+                                + " values ('" + idUser + "',"
+                                + "'" + idOuvrage + "', '1')";
+                conn.Open();
+                command.ExecuteNonQuery();
+                command.CommandText = " UPDATE ouvrage"
+                                    + " SET nbrExemplaireEmp = nbrExemplaireEmp + 1"
+                                    + " WHERE idOuvrage = '" + idOuvrage + "'";
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            conn.Close();
+        }
+        public void confirmer(int idOuvrage, int idUser)
+        {
+            try
+            {
+                command.CommandText = " UPDATE emprunt"
+                                    + " SET confirme = '1'"
+                                    + " WHERE idOuvrage = '" + idOuvrage + "' AND idUser = '"+idUser+"'";
+                conn.Open();
+                command.ExecuteNonQuery();
+
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            conn.Close();
+        }
     }
 }

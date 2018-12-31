@@ -18,6 +18,9 @@ namespace LibraryInterfaces
         List<string[]> bookListAll();
 
         [OperationContract]
-        void reserver();
+        void reserver(int idOuvrage, int idUser);
+
+        [OperationContract]
+        void confirmer(int idOuvrage, int idUser);
     }
 }
