@@ -27,11 +27,12 @@ namespace Server
         }
       
 
-        public void addUserEnseignantInfo(int matricule, int idUser, string name, string surname, string grade)
+        public void addUserEnseignantInfo(string matricule, string email, string name, string surname, string grade)
         {
+            
             command.CommandText = "INSERT INTO enseignant (matricule,idUser,nom,prenom,grade)"
                                  + " values ('" + matricule + "',"
-                                 + "'" + idUser + "',"
+                                 + "(SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                                  + "'" + surname + "',"
                                  + "'" + name + "',"
                                  + "'" + grade + "')";
@@ -47,11 +48,11 @@ namespace Server
             conn.Close();
         }
 
-        public void addUserEtudiantInfo(int numCarte, int idUser, string surname, string name, string specialite, string niv)
+        public void addUserEtudiantInfo(string numCarte, string email, string surname, string name, string specialite, string niv)
         {
             command.CommandText = "INSERT INTO etudiant (numeroCarte,idUser,nom,prenom,specialite,niveau)"
                      + " values ('" + numCarte + "',"
-                     + "'" + idUser + "',"
+                     + "(SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                      + "'" + surname + "',"
                      + "'" + name + "',"
                      + "'" + specialite +"',"
@@ -174,7 +175,7 @@ namespace Server
 
         public List<string[]> checkUserEnseignantInfo(string email)
         {
-            command.CommandText = "SELECT * FROM `enseignant` WHERE idUser = (SELECT idUser FROM 'user' WHERE email ='"+email+"')";
+            command.CommandText = "SELECT * FROM `enseignant` WHERE idUser = (SELECT idUser FROM `user` WHERE email ='" + email+"')";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -201,7 +202,7 @@ namespace Server
 
         public List<string[]> checkUserEtudiantInfo(string email)
         {
-            command.CommandText = "SELECT * FROM `etudiant` WHERE idUser = (SELECT idUser FROM 'user' WHERE email ='" + email + "')";
+            command.CommandText = "SELECT * FROM `etudiant` WHERE idUser = (SELECT idUser FROM `user` WHERE email ='" + email + "')";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -244,12 +245,12 @@ namespace Server
             conn.Close();
         }
 
-        public void reserver(int idOuvrage,int idUser)
+        public void reserver(string idOuvrage,string email)
         {
             try
             {
                 command.CommandText = "INSERT INTO emprunt (idUser, idOuvrage)"
-                                + " values ('" + idUser + "',"
+                                + " values ((SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                                 + "'" + idOuvrage + "')";
                 conn.Open();
                 command.ExecuteNonQuery();

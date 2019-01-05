@@ -36,11 +36,11 @@ namespace LibraryInterfaces
         List<string[]> bookListSearchByKeyWords(string search);
 
         [OperationContract]
-        [WebInvoke(Method = "POST",
+        [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "reserver/idOuvrage/idUser")]
-        void reserver(int idOuvrage, int idUser);
+            UriTemplate = "reserver/{idOuvrage}/{email}")]
+        void reserver(string idOuvrage, string email);
 
 
         [OperationContract]
@@ -52,19 +52,19 @@ namespace LibraryInterfaces
 
 
         [OperationContract]
-        [WebInvoke(Method = "POST",
+        [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "addUserEtudiantInfo/numCarte/idUser/{name}/{surname}/{specialite}/{niv}")]
-        void addUserEtudiantInfo(int numCarte, int idUser, string name, string surname, string specialite, string niv);
+            UriTemplate = "addUserEtudiantInfo/{numCarte}/{email}/{name}/{surname}/{specialite}/{niv}")]
+        void addUserEtudiantInfo(string numCarte, string email, string name, string surname, string specialite, string niv);
 
 
         [OperationContract]
-        [WebInvoke(Method = "POST",
+        [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "addUserEnseignant/matricule/idUser/{name}/{surname}/{grade}")]
-        void addUserEnseignantInfo(int matricule, int idUser, string name, string surname, string grade);
+            UriTemplate = "addUserEnseignant/{matricule}/{email}/{name}/{surname}/{grade}")]
+        void addUserEnseignantInfo(string matricule, string email, string name, string surname, string grade);
 
 
         [OperationContract]
