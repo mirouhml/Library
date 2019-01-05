@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -7,6 +8,8 @@ using System.Text;
 using LibraryInterfaces;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using Quartz;
+using Quartz.Impl;
 
 namespace Server
 {
@@ -16,6 +19,7 @@ namespace Server
         string connectionString = @"Server=localhost;Database=library;Uid=root;Pwd=root;";
         MySqlConnection conn;
         MySqlCommand command;
+        private System.Threading.Timer timer;
         public LibraryService()
         {
             conn = new MySqlConnection(connectionString);
@@ -168,9 +172,9 @@ namespace Server
             return list;
         }
 
-        public List<string[]> checkUserEnseignantInfo(int idUser)
+        public List<string[]> checkUserEnseignantInfo(string email)
         {
-            command.CommandText = "SELECT * FROM `enseignant` WHERE idUser = '"+idUser+"'";
+            command.CommandText = "SELECT * FROM `enseignant` WHERE idUser = (SELECT idUser FROM 'user' WHERE email ='"+email+"')";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -195,9 +199,9 @@ namespace Server
             return list;
         }
 
-        public List<string[]> checkUserEtudiantInfo(int idUser)
+        public List<string[]> checkUserEtudiantInfo(string email)
         {
-            command.CommandText = "SELECT * FROM `etudiant` WHERE idUser='"+idUser+"'";
+            command.CommandText = "SELECT * FROM `etudiant` WHERE idUser = (SELECT idUser FROM 'user' WHERE email ='" + email + "')";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -223,10 +227,10 @@ namespace Server
             return list;
         }
 
-        public void createUser(string username, string password)
+        public void createUser(string email, string password)
         {
-            command.CommandText = "INSERT INTO user (username,password)"
-                     + " values ('" + username + "',"
+            command.CommandText = "INSERT INTO user (email,password)"
+                     + " values ('" + email + "',"
                      + "'" + password + "')";
             try
             {
@@ -260,5 +264,23 @@ namespace Server
             }
             conn.Close();
         }
+
+        //public void Start(DateTime date)
+        //{
+        //    NameValueCollection props = new NameValueCollection
+        //    {
+        //        { "quartz.serializer.type", "binary" }
+        //    };
+        //    StdSchedulerFactory factory = new StdSchedulerFactory(props);
+        //    IScheduler scheduler = StdSchedulerFactory.GetScheduler();
+        //    scheduler.Start();
+        //    IJobDetail job = JobBuilder.Create<triggerWork>().Build();
+        //    ITrigger trigger = TriggerBuilder.Create()
+        //     .WithIdentity("IDGJob", "IDG")
+        //       .StartAt(date)
+        //       .WithPriority(1)
+        //       .Build();
+        //    scheduler.ScheduleJob(job, trigger);
+        //}
     }
 }

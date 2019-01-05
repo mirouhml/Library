@@ -68,18 +68,18 @@ namespace LibraryInterfaces
 
 
         [OperationContract]
-        [WebInvoke(Method = "POST",
+        [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "checkUserEtudiantInfo/idUser")]
-        List<string[]> checkUserEtudiantInfo(int idUser);
+            UriTemplate = "checkUserEtudiantInfo/email")]
+        List<string[]> checkUserEtudiantInfo(string email);
 
 
         [OperationContract]
-        [WebInvoke(Method = "POST",
+        [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "checkUserEnseignantInfo/idUser")]
-        List<string[]> checkUserEnseignantInfo(int idUser);
+            UriTemplate = "checkUserEnseignantInfo/email")]
+        List<string[]> checkUserEnseignantInfo(string email);
     }
 }
