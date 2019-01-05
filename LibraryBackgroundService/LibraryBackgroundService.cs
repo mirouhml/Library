@@ -8,6 +8,7 @@ using System.ServiceModel;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using Server;
 
 namespace LibraryBackgroundService
 {
@@ -27,10 +28,10 @@ namespace LibraryBackgroundService
                 host.Close();
                 host2.Close();
             }
-            host = new ServiceHost(typeof(Server.LibraryService));
-            host2 = new ServiceHost(typeof(Server.LibraryAdministrationService));
-            host.Open();
-            host2.Open();
+            host = new ServiceHost(typeof(LibraryAdministrationService));
+            host2 = new ServiceHost(typeof(LibraryService));
+                host.Open();
+                host2.Open();
         }
 
         protected override void OnStop()

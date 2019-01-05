@@ -71,7 +71,7 @@ namespace LibraryInterfaces
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "checkUserEtudiantInfo/email")]
+            UriTemplate = "checkUserEtudiantInfo/{email}")]
         List<string[]> checkUserEtudiantInfo(string email);
 
 
@@ -79,7 +79,7 @@ namespace LibraryInterfaces
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "checkUserEnseignantInfo/email")]
+            UriTemplate = "checkUserEnseignantInfo/{email}")]
         List<string[]> checkUserEnseignantInfo(string email);
     }
 }
