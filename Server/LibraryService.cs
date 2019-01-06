@@ -10,6 +10,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using Quartz;
 using Quartz.Impl;
+using System.Threading;
 
 namespace Server
 {
@@ -19,11 +20,12 @@ namespace Server
         string connectionString = @"Server=localhost;Database=library;Uid=root;Pwd=root;";
         MySqlConnection conn;
         MySqlCommand command;
-        private System.Threading.Timer timer;
+        private List<Timer> timerList;
         public LibraryService()
         {
             conn = new MySqlConnection(connectionString);
             command = conn.CreateCommand();
+            timerList = new List<Timer>();
         }
       
 
@@ -266,6 +268,36 @@ namespace Server
             conn.Close();
         }
 
+        public bool login(string email, string password)
+        {
+            command.CommandText = "SELECT email,password FROM `user` WHERE email ='" + email + "'";
+            Boolean ok = false;
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = command.ExecuteReader();
+                string email2 = "";
+                string password2 = "";
+                while (reader.Read())
+                {
+                    email2 = reader["email"].ToString();
+                    password2 = reader["password"].ToString();
+                }
+                if (email2 == email && password2 == password)
+                {
+                    ok = true;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            conn.Close();
+            return ok;
+        }
+
         //public void Start(DateTime date)
         //{
         //    NameValueCollection props = new NameValueCollection
@@ -283,5 +315,27 @@ namespace Server
         //       .Build();
         //    scheduler.ScheduleJob(job, trigger);
         //}
+        //private void SetUpTimer(TimeSpan alertTime)
+        //{
+        //    DateTime current = DateTime.Now;
+        //    TimeSpan timeToGo = alertTime - current.TimeOfDay;
+        //    if (timeToGo < TimeSpan.Zero)
+        //    {
+        //        return;//time already passed
+        //    }
+        //    Timer timer = new System.Threading.Timer(x =>
+        //    {
+        //        doWork();
+        //    }, null, timeToGo, Timeout.InfiniteTimeSpan);
+        //    timerList.Add(timer);
+
+        //}
+
+        //private void doWork()
+        //{
+        //    //this runs at 16:00:00
+        //}
+
+
     }
 }

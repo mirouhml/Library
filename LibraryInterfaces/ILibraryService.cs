@@ -47,8 +47,16 @@ namespace LibraryInterfaces
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "createUser/{username}/{password}")]
-        void createUser(string username, string password);
+            UriTemplate = "createUser/{email}/{password}")]
+        void createUser(string email, string password);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "login/{email}/{password}")]
+        Boolean login(string email, string password);
 
 
         [OperationContract]
