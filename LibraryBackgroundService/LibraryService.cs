@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -7,8 +8,9 @@ using System.Text;
 using LibraryInterfaces;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Threading;
 
-namespace BackgroundLibraryService
+namespace LibraryBackgroundService
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "LibraryService" in both code and config file together.
     public class LibraryService : ILibraryService
@@ -16,18 +18,21 @@ namespace BackgroundLibraryService
         string connectionString = @"Server=localhost;Database=library;Uid=root;Pwd=root;";
         MySqlConnection conn;
         MySqlCommand command;
+        private List<Timer> timerList;
         public LibraryService()
         {
             conn = new MySqlConnection(connectionString);
             command = conn.CreateCommand();
+            timerList = new List<Timer>();
         }
       
 
-        public void addUserEnseignantInfo(int matricule, int idUser, string name, string surname, string grade)
+        public void addUserEnseignantInfo(string matricule, string email, string name, string surname, string grade)
         {
+            
             command.CommandText = "INSERT INTO enseignant (matricule,idUser,nom,prenom,grade)"
                                  + " values ('" + matricule + "',"
-                                 + "'" + idUser + "',"
+                                 + "(SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                                  + "'" + surname + "',"
                                  + "'" + name + "',"
                                  + "'" + grade + "')";
@@ -43,11 +48,11 @@ namespace BackgroundLibraryService
             conn.Close();
         }
 
-        public void addUserEtudiantInfo(int numCarte, int idUser, string surname, string name, string specialite, string niv)
+        public void addUserEtudiantInfo(string numCarte, string email, string surname, string name, string specialite, string niv)
         {
             command.CommandText = "INSERT INTO etudiant (numeroCarte,idUser,nom,prenom,specialite,niveau)"
                      + " values ('" + numCarte + "',"
-                     + "'" + idUser + "',"
+                     + "(SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                      + "'" + surname + "',"
                      + "'" + name + "',"
                      + "'" + specialite +"',"
@@ -168,9 +173,9 @@ namespace BackgroundLibraryService
             return list;
         }
 
-        public List<string[]> checkUserEnseignantInfo(int idUser)
+        public List<string[]> checkUserEnseignantInfo(string email)
         {
-            command.CommandText = "SELECT * FROM `enseignant` WHERE idUser = '"+idUser+"'";
+            command.CommandText = "SELECT * FROM `enseignant` WHERE idUser = (SELECT idUser FROM `user` WHERE email ='" + email+"')";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -195,9 +200,9 @@ namespace BackgroundLibraryService
             return list;
         }
 
-        public List<string[]> checkUserEtudiantInfo(int idUser)
+        public List<string[]> checkUserEtudiantInfo(string email)
         {
-            command.CommandText = "SELECT * FROM `etudiant` WHERE idUser='"+idUser+"'";
+            command.CommandText = "SELECT * FROM `etudiant` WHERE idUser = (SELECT idUser FROM `user` WHERE email ='" + email + "')";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -223,10 +228,10 @@ namespace BackgroundLibraryService
             return list;
         }
 
-        public void createUser(string username, string password)
+        public void createUser(string email, string password)
         {
-            command.CommandText = "INSERT INTO user (username,password)"
-                     + " values ('" + username + "',"
+            command.CommandText = "INSERT INTO user (email,password)"
+                     + " values ('" + email + "',"
                      + "'" + password + "')";
             try
             {
@@ -240,12 +245,12 @@ namespace BackgroundLibraryService
             conn.Close();
         }
 
-        public void reserver(int idOuvrage,int idUser)
+        public void reserver(string idOuvrage,string email)
         {
             try
             {
                 command.CommandText = "INSERT INTO emprunt (idUser, idOuvrage)"
-                                + " values ('" + idUser + "',"
+                                + " values ((SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                                 + "'" + idOuvrage + "')";
                 conn.Open();
                 command.ExecuteNonQuery();
@@ -260,5 +265,75 @@ namespace BackgroundLibraryService
             }
             conn.Close();
         }
+
+        public bool login(string email, string password)
+        {
+            command.CommandText = "SELECT email,password FROM `user` WHERE email ='" + email + "'";
+            Boolean ok = false;
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = command.ExecuteReader();
+                string email2 = "";
+                string password2 = "";
+                while (reader.Read())
+                {
+                    email2 = reader["email"].ToString();
+                    password2 = reader["password"].ToString();
+                }
+                if (email2 == email && password2 == password)
+                {
+                    ok = true;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            conn.Close();
+            return ok;
+        }
+
+        //public void Start(DateTime date)
+        //{
+        //    NameValueCollection props = new NameValueCollection
+        //    {
+        //        { "quartz.serializer.type", "binary" }
+        //    };
+        //    StdSchedulerFactory factory = new StdSchedulerFactory(props);
+        //    IScheduler scheduler = StdSchedulerFactory.GetScheduler();
+        //    scheduler.Start();
+        //    IJobDetail job = JobBuilder.Create<triggerWork>().Build();
+        //    ITrigger trigger = TriggerBuilder.Create()
+        //     .WithIdentity("IDGJob", "IDG")
+        //       .StartAt(date)
+        //       .WithPriority(1)
+        //       .Build();
+        //    scheduler.ScheduleJob(job, trigger);
+        //}
+        //private void SetUpTimer(TimeSpan alertTime)
+        //{
+        //    DateTime current = DateTime.Now;
+        //    TimeSpan timeToGo = alertTime - current.TimeOfDay;
+        //    if (timeToGo < TimeSpan.Zero)
+        //    {
+        //        return;//time already passed
+        //    }
+        //    Timer timer = new System.Threading.Timer(x =>
+        //    {
+        //        doWork();
+        //    }, null, timeToGo, Timeout.InfiniteTimeSpan);
+        //    timerList.Add(timer);
+
+        //}
+
+        //private void doWork()
+        //{
+        //    //this runs at 16:00:00
+        //}
+
+
     }
 }

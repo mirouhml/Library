@@ -7,10 +7,10 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 
-namespace BackgroundLibraryService
+namespace LibraryBackgroundService
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "LibraryAdministrationService" in both code and config file together.
-    public class LibraryAdministrationService : ILibraryAdministrationService
+    public class LibraryAdministrationService : MarshalByRefObject, ILibraryAdministrationService
     {
         string connectionString = @"Server=localhost;Database=library;Uid=root;Pwd=root;";
         MySqlConnection conn;
@@ -69,12 +69,12 @@ namespace BackgroundLibraryService
             conn.Close();
             return list;
         }
-        public void reserver(int idOuvrage, int idUser)
+        public void reserver(int idOuvrage, string email)
         {
             try
             {
                 command.CommandText = "INSERT INTO emprunt (idUser, idOuvrage, confirme)"
-                                + " values ('" + idUser + "',"
+                                + " values ((SELECT idUser FROM `user` WHERE email ='" + email + "'),"
                                 + "'" + idOuvrage + "', '1')";
                 conn.Open();
                 command.ExecuteNonQuery();
@@ -89,16 +89,33 @@ namespace BackgroundLibraryService
             }
             conn.Close();
         }
-        public void confirmer(int idOuvrage, int idUser)
+        public void confirmer(int idOuvrage, string email)
         {
             try
             {
                 command.CommandText = " UPDATE emprunt"
                                     + " SET confirme = '1'"
-                                    + " WHERE idOuvrage = '" + idOuvrage + "' AND idUser = '"+idUser+"'";
+                                    + " WHERE idOuvrage = '" + idOuvrage + "' AND idUser = (SELECT idUser FROM `user` WHERE email ='" + email + "')";
                 conn.Open();
                 command.ExecuteNonQuery();
-
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            conn.Close();
+        }
+        public void remise(int idOuvrage, string email)
+        {
+            try
+            {
+                command.CommandText = " DELETE FROM emprunt"
+                                    + " WHERE idOuvrage = '" + idOuvrage + "' AND idUser = (SELECT idUser FROM `user` WHERE email ='" + email + "')";
+                conn.Open();
+                command.ExecuteNonQuery();
+                command.CommandText = " UPDATE ouvrage"
+                                    + " SET nbrExemplaireEmp = nbrExemplaireEmp - 1"
+                                    + " WHERE idOuvrage = '" + idOuvrage + "'";
                 command.ExecuteNonQuery();
             }
             catch (Exception ex)

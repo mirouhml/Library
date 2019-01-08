@@ -34,10 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=8.0.13.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -48,12 +50,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LibraryAdministrationService.cs" />
     <Compile Include="LibraryBackgroundService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="LibraryBackgroundService.Designer.cs">
       <DependentUpon>LibraryBackgroundService.cs</DependentUpon>
     </Compile>
+    <Compile Include="LibraryService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -70,10 +74,6 @@
     <ProjectReference Include="..\LibraryInterfaces\LibraryInterfaces.csproj">
       <Project>{6c6a6a51-c9c4-4279-acef-8b33b077f20d}</Project>
       <Name>LibraryInterfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Server\Server.csproj">
-      <Project>{c66eb7dd-ac9b-4214-8a33-694b088a0505}</Project>
-      <Name>Server</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

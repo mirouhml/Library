@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryInterfaces", "LibraryInterfaces\LibraryInterfaces.csproj", "{6C6A6A51-C9C4-4279-ACEF-8B33B077F20D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{C66EB7DD-AC9B-4214-8A33-694B088A0505}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{869228F5-FCD2-4AF7-A5EC-FE789C904D4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryBackgroundService", "LibraryBackgroundService\LibraryBackgroundService.csproj", "{A2E1334B-5E5D-4D7D-8E86-6B35FE9D7910}"
@@ -21,10 +19,6 @@ Global
 		{6C6A6A51-C9C4-4279-ACEF-8B33B077F20D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C6A6A51-C9C4-4279-ACEF-8B33B077F20D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C6A6A51-C9C4-4279-ACEF-8B33B077F20D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C66EB7DD-AC9B-4214-8A33-694B088A0505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C66EB7DD-AC9B-4214-8A33-694B088A0505}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C66EB7DD-AC9B-4214-8A33-694B088A0505}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C66EB7DD-AC9B-4214-8A33-694B088A0505}.Release|Any CPU.Build.0 = Release|Any CPU
 		{869228F5-FCD2-4AF7-A5EC-FE789C904D4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{869228F5-FCD2-4AF7-A5EC-FE789C904D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{869228F5-FCD2-4AF7-A5EC-FE789C904D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
