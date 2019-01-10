@@ -15,6 +15,7 @@ namespace LibraryBackgroundService
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "LibraryService" in both code and config file together.
     public class LibraryService : ILibraryService
     {
+        int eventCount = 0;
         string connectionString = @"Server=localhost;Database=library;Uid=root;Pwd=root;";
         MySqlConnection conn;
         MySqlCommand command;
@@ -247,6 +248,7 @@ namespace LibraryBackgroundService
 
         public void reserver(string idOuvrage,string email)
         {
+            eventCount++;
             try
             {
                 command.CommandText = "INSERT INTO emprunt (idUser, idOuvrage)"
@@ -257,6 +259,11 @@ namespace LibraryBackgroundService
                 command.CommandText = " UPDATE ouvrage"
                                     + " SET nbrExemplaireEmp = nbrExemplaireEmp + 1"
                                     + " WHERE idOuvrage = '" + idOuvrage + "'";
+                command.ExecuteNonQuery();
+                command.CommandText = " CREATE EVENT event_"+eventCount
+                                    + " ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 24 HOUR"
+                                    + " DO "
+                                        + " CALL checkConfirme('"+email+"',"+idOuvrage+")";
                 command.ExecuteNonQuery();
             }
             catch (Exception ex)
