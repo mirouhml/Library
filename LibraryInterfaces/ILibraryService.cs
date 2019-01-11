@@ -32,13 +32,6 @@ namespace LibraryInterfaces
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "bookListSearchByKeyWords/{search}")]
-        List<string[]> bookListSearchByKeyWords(string search);
-
-        [OperationContract]
-        [WebInvoke(Method = "GET",
-            ResponseFormat = WebMessageFormat.Json,
-            BodyStyle = WebMessageBodyStyle.Wrapped,
             UriTemplate = "reserver/{idOuvrage}/{email}")]
         void reserver(string idOuvrage, string email);
 
@@ -89,5 +82,13 @@ namespace LibraryInterfaces
             BodyStyle = WebMessageBodyStyle.Wrapped,
             UriTemplate = "checkUserEnseignantInfo/{email}")]
         List<string[]> checkUserEnseignantInfo(string email);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "reservationList/{idOuvrage}/{email}")]
+        List<String[]> reservationList(string idOuvrage, string email);
     }
 }

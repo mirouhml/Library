@@ -72,7 +72,7 @@ namespace LibraryBackgroundService
 
         public List<string[]> bookListAllDisponible()
         {
-            command.CommandText = "SELECT idOuvrage,titre FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)";
+            command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -80,9 +80,14 @@ namespace LibraryBackgroundService
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    string[] line = new string[2];
+                    string[] line = new string[7];
                     line[0] = reader["idOuvrage"].ToString();
                     line[1] = reader["titre"].ToString();
+                    line[2] = reader["auteur"].ToString();
+                    line[3] = reader["theme"].ToString();
+                    line[4] = reader["nbrExemplaire"].ToString();
+                    line[5] = reader["nbrExemplaireEmp"].ToString();
+                    line[6] = reader["description"].ToString();
                     list.Add(line);
                 }
                     
@@ -110,65 +115,75 @@ namespace LibraryBackgroundService
             switch (j)
             {   //search by title
                 case 1: {
-                        command.CommandText = "SELECT idOuvrage, titre FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND titre = '"+search+"'";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND `titre` LIKE '%" + search + "%'";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
-                            string[] line = new string[2];
+                            string[] line = new string[7];
                             line[0] = reader["idOuvrage"].ToString();
                             line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
                             list.Add(line);
                         }
                         break; }
                 //search by author
                 case 2: {
-                        command.CommandText = "SELECT idOuvrage, titre FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND auteur = '" + search + "'";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)  AND auteur LIKE '%" + search + "%'";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
-                            string[] line = new string[2];
+                            string[] line = new string[7];
                             line[0] = reader["idOuvrage"].ToString();
                             line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
                             list.Add(line);
                         }
                         break; }
                 //search by theme
                 case 3: {
-                        command.CommandText = "SELECT idOuvrage, titre FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND theme = '" + search + "'";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)  AND theme LIKE '%" + search + "%'";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
-                            string[] line = new string[2];
+                            string[] line = new string[7];
                             line[0] = reader["idOuvrage"].ToString();
                             line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
                             list.Add(line);
                         }
                         break; }
+                //search by keywords
+                case 4:
+                    {
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND MATCH (description) AGAINST('" + search + "')";
+                        MySqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            string[] line = new string[7];
+                            line[0] = reader["idOuvrage"].ToString();
+                            line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
+                            list.Add(line);
+                        }
+                        break;
+                    }
                 default: break;
-            }
-            conn.Close();
-            return list;
-        }
-
-        public List<string[]> bookListSearchByKeyWords(string search)
-        {
-            command.CommandText = "SELECT idOuvrage,titre FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND MATCH (description) AGAINST('" + search+"')";
-            List<string[]> list = new List<string[]>();
-            try
-            {
-                conn.Open();
-                MySqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    string[] line = new string[2];
-                    line[0] = reader["idOuvrage"].ToString();
-                    line[1] = reader["titre"].ToString();
-                    list.Add(line);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
             }
             conn.Close();
             return list;
@@ -303,43 +318,35 @@ namespace LibraryBackgroundService
             return ok;
         }
 
-        //public void Start(DateTime date)
-        //{
-        //    NameValueCollection props = new NameValueCollection
-        //    {
-        //        { "quartz.serializer.type", "binary" }
-        //    };
-        //    StdSchedulerFactory factory = new StdSchedulerFactory(props);
-        //    IScheduler scheduler = StdSchedulerFactory.GetScheduler();
-        //    scheduler.Start();
-        //    IJobDetail job = JobBuilder.Create<triggerWork>().Build();
-        //    ITrigger trigger = TriggerBuilder.Create()
-        //     .WithIdentity("IDGJob", "IDG")
-        //       .StartAt(date)
-        //       .WithPriority(1)
-        //       .Build();
-        //    scheduler.ScheduleJob(job, trigger);
-        //}
-        //private void SetUpTimer(TimeSpan alertTime)
-        //{
-        //    DateTime current = DateTime.Now;
-        //    TimeSpan timeToGo = alertTime - current.TimeOfDay;
-        //    if (timeToGo < TimeSpan.Zero)
-        //    {
-        //        return;//time already passed
-        //    }
-        //    Timer timer = new System.Threading.Timer(x =>
-        //    {
-        //        doWork();
-        //    }, null, timeToGo, Timeout.InfiniteTimeSpan);
-        //    timerList.Add(timer);
+        public List<String[]> reservationList(string idOuvrage, string email)
+        {
+            command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)";
+            List<string[]> list = new List<string[]>();
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    string[] line = new string[7];
+                    line[0] = reader["idOuvrage"].ToString();
+                    line[1] = reader["titre"].ToString();
+                    line[2] = reader["auteur"].ToString();
+                    line[3] = reader["theme"].ToString();
+                    line[4] = reader["nbrExemplaire"].ToString();
+                    line[5] = reader["nbrExemplaireEmp"].ToString();
+                    line[6] = reader["description"].ToString();
+                    list.Add(line);
+                }
 
-        //}
-
-        //private void doWork()
-        //{
-        //    //this runs at 16:00:00
-        //}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            conn.Close();
+            return list;
+        }
 
 
     }
