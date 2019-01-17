@@ -33,7 +33,7 @@ namespace LibraryInterfaces
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
             UriTemplate = "reserver/{idOuvrage}/{email}")]
-        void reserver(string idOuvrage, string email);
+        int reserver(string idOuvrage, string email);
 
 
         [OperationContract]
@@ -49,7 +49,7 @@ namespace LibraryInterfaces
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
             UriTemplate = "login/{email}/{password}")]
-        Boolean login(string email, string password);
+        bool login(string email, string password);
 
 
         [OperationContract]
@@ -64,9 +64,22 @@ namespace LibraryInterfaces
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "addUserEnseignant/{matricule}/{email}/{name}/{surname}/{grade}")]
+            UriTemplate = "addUserEnseignantInfo/{matricule}/{email}/{name}/{surname}/{grade}")]
         void addUserEnseignantInfo(string matricule, string email, string name, string surname, string grade);
 
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "updateUserEtudiantInfo/{numCarte}/{name}/{surname}/{specialite}/{niv}")]
+        bool updateUserEtudiantInfo(string numCarte, string name, string surname, string specialite, string niv);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "updateUserEnseignantInfo/{matricule}/{name}/{surname}/{niv}")]
+        bool updateUserEnseignantInfo(string matricule, string name, string surname, string niv);
 
         [OperationContract]
         [WebInvoke(Method = "GET",
@@ -88,7 +101,43 @@ namespace LibraryInterfaces
         [WebInvoke(Method = "GET",
             ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped,
-            UriTemplate = "reservationList/{idOuvrage}/{email}")]
-        List<String[]> reservationList(string idOuvrage, string email);
+            UriTemplate = "reservationList/{email}")]
+        List<String[]> reservationList(string email);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "checkEtudiantOrEnseignant/{choice}/{id}")]
+        bool checkEtudiantOrEnseignant(string choice, string id);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "checkEtudiantOrEnseignantAvailable/{choice}/{id}")]
+        bool checkEtudiantOrEnseignantAvailable(string choice, string id);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "checkEmail/{email}")]
+        bool checkEmail(string email);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "isEtudiant/{email}")]
+        bool isEtudiant(string email);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+            ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped,
+            UriTemplate = "forgotPassword/{email}")]
+        bool forgotPassword(string email);
     }
 }
