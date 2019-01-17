@@ -319,6 +319,8 @@ namespace LibraryBackgroundService
         // 2 -> success
         public int remise(int choice, int idOuvrage, int id)
         {
+            var mailservice = new Mailservice();
+            remiseEmailSent += mailservice.OnremiseEmailSent;
             string user = "";
             int ok = 0;
             conn.Open();
@@ -417,9 +419,7 @@ namespace LibraryBackgroundService
                     title = reader["titre"].ToString();
                 }
                 reader.Close();
-
                 OnremiseEmailSent(email, title);
-
                 command.CommandText = "DELETE FROM liste_attente WHERE idUser = " + idUser + " AND idOuvrage = " + idOuvrage;
                 command.ExecuteNonQuery();
 
@@ -430,6 +430,7 @@ namespace LibraryBackgroundService
 
         public bool login(string email, string password)
         {
+            
             conn.Open();
             string email2 = "";
             string password2 = "";
@@ -456,8 +457,7 @@ namespace LibraryBackgroundService
 
         protected virtual void OnremiseEmailSent(string email, string title)
         {
-            if (remiseEmailSent != null)
-                remiseEmailSent.Invoke(this, new EmailEventArgs() { email = email, title = title });
+            remiseEmailSent?.Invoke(this, new EmailEventArgs() { email = email, title = title });
         }
 
         public class EmailEventArgs : EventArgs
@@ -468,7 +468,7 @@ namespace LibraryBackgroundService
 
         public class Mailservice
         {
-            public void OnremiseEmailSent(Object sender, LibraryAdministrationService.EmailEventArgs args)
+            public void OnremiseEmailSent(object sender, EmailEventArgs args)
             {
                 SmtpClient client = new SmtpClient();
                 client.Port = 587;

@@ -56,7 +56,7 @@ namespace Client
             //Console.WriteLine("remise amarhml 8: " + proxy.remise(2, 5, 150));
             //Console.WriteLine("result: " +proxy.login("admin@universite2.dz", "adminadmin"));
             //Console.WriteLine("reserver 1234: " + proxy.reserver(1, 1, 1234));
-            //Console.WriteLine("reserver 123: " + proxy.reserver(1, 1, 123));
+            //Console.WriteLine("reserver 123: " + proxy.reserver(1, 1, 1234));
             Console.WriteLine("remise 123 1: " + proxy.remise(1,1,123));
             Console.WriteLine("done!");
             Console.ReadLine();

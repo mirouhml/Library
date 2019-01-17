@@ -647,7 +647,7 @@ namespace LibraryBackgroundService
             return ok;
         }
 
-        //Forgets password
+        //Sends the forgotten password
         public bool forgotPassword(string email)
         {
             bool ok = false;
@@ -678,8 +678,8 @@ namespace LibraryBackgroundService
                 client.Timeout = 10000;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
-                client.Credentials = new System.Net.NetworkCredential("amarhamlaoui@gmail.com", "password");
-                MailMessage mm = new MailMessage("amarhamlaoui@gmail.com", email, "test", password);
+                client.Credentials = new System.Net.NetworkCredential("library.universite2@gmail.com", "LibraryOfNTIC");
+                MailMessage mm = new MailMessage("library.universite2@gmail.com", email, "test", password);
                 mm.BodyEncoding = UTF8Encoding.UTF8;
                 mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
 
