@@ -15,5 +15,6 @@ namespace LibraryInterfaces
         int confirmer(int choice, int idOuvrage, int id);
         int remise(int choice, int idOuvrage, int id);
         bool login(string email, string password);
+        List<string[]> bookListSearch(string i, string search);
     }
 }

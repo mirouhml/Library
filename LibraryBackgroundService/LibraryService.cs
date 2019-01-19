@@ -69,9 +69,10 @@ namespace LibraryBackgroundService
             conn.Close();
         }
 
+        //Returns the books list
         public List<string[]> bookListAllDisponible()
         {
-            command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)";
+            command.CommandText = "SELECT * FROM `ouvrage`";
             List<string[]> list = new List<string[]>();
             try
             {
@@ -99,6 +100,11 @@ namespace LibraryBackgroundService
             return list;
         }
 
+        //Search for book(s)
+        // 1 -> by title
+        // 2 -> by author
+        // 3 -> by subject
+        // 4 -> by keywords
         public List<string[]> bookListSearch(string i, string search)
         {
             List<string[]> list = new List<string[]>();
@@ -114,7 +120,7 @@ namespace LibraryBackgroundService
             switch (j)
             {   //search by title
                 case 1: {
-                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND `titre` LIKE '%" + search + "%'";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE `titre` LIKE '%" + search + "%'";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
@@ -131,7 +137,7 @@ namespace LibraryBackgroundService
                         break; }
                 //search by author
                 case 2: {
-                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)  AND auteur LIKE '%" + search + "%'";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE auteur LIKE '%" + search + "%'";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
@@ -148,7 +154,7 @@ namespace LibraryBackgroundService
                         break; }
                 //search by theme
                 case 3: {
-                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp)  AND theme LIKE '%" + search + "%'";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE theme LIKE '%" + search + "%'";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
@@ -166,7 +172,7 @@ namespace LibraryBackgroundService
                 //search by keywords
                 case 4:
                     {
-                        command.CommandText = "SELECT * FROM `ouvrage` WHERE (nbrExemplaire > nbrExemplaireEmp) AND MATCH (description) AGAINST('" + search + "')";
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE MATCH (description) AGAINST('" + search + "')";
                         MySqlDataReader reader = command.ExecuteReader();
                         while (reader.Read())
                         {
@@ -335,6 +341,24 @@ namespace LibraryBackgroundService
                             command.CommandText = "UPDATE `admin` SET eventCount = " + eventCount + " WHERE adminID = 1";
                             command.ExecuteNonQuery();
                             ok = 4;
+                        }
+                        else
+                        {
+                            command.CommandText = "SELECT IF( EXISTS(SELECT idUser FROM liste_attente WHERE idUser = " + user + " AND idOuvrage = " + idOuvrage + "), 1,0)";
+                            reader = command.ExecuteReader();
+                            int wait = 0;
+                            while (reader.Read())
+                            {
+                                wait = Int32.Parse(reader[0].ToString());
+                            }
+                            reader.Close();
+                            if (wait == 0)
+                            {
+                                command.CommandText = "INSERT INTO liste_attente (idOuvrage, idUser)"
+                                                    + " values (" + idOuvrage + "," + user + ")";
+
+                            } else ok = 5;
+
                         }
                     }
 

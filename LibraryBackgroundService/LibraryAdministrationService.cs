@@ -145,11 +145,21 @@ namespace LibraryBackgroundService
                                                 ok = 5;
                                             }
                                         }
-                                        else
+                                        else { 
+                                            command.CommandText = "SELECT IF( EXISTS(SELECT idUser FROM liste_attente WHERE idUser = " + user + " AND idOuvrage = " + idOuvrage + "), 1,0)";
+                                        reader = command.ExecuteReader();
+                                        int wait = 0;
+                                        while (reader.Read())
+                                        {
+                                            wait = Int32.Parse(reader[0].ToString());
+                                        }
+                                        reader.Close();
+                                        if (wait == 0)
                                         {
                                             command.CommandText = "INSERT INTO liste_attente (idOuvrage, idUser)"
                                                                 + " values (" + idOuvrage + "," + user + ")";
-                                            command.ExecuteNonQuery();
+
+                                        } else ok = 6;
                                         }
                                     }
                                 }
@@ -264,7 +274,7 @@ namespace LibraryBackgroundService
                             if (ok == 1)
                             {
                                 command.CommandText = " UPDATE emprunt"
-                                                    + " SET confirme = '1'"
+                                                    + " SET confirme = 1"
                                                     + " WHERE idOuvrage = '" + idOuvrage + "' AND idUser = '" + user + "'";
                                 if (command.ExecuteNonQuery() > 0)
                                 {
@@ -393,36 +403,39 @@ namespace LibraryBackgroundService
             }
             if (ok == 2)
             {
+                int o = 0;
                 string idUser = "";
                 command.CommandText = "SELECT idUser FROM liste_attente where idOuvrage = '" + idOuvrage + "' order by idListe asc limit 1";
                 MySqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     idUser = reader["idUser"].ToString();
+                    o = 1;
                 }
                 reader.Close();
-
-                string email ="";
-                command.CommandText = "SELECT email FROM `user` WHERE idUser =" + idUser;
-                reader = command.ExecuteReader();
-                while (reader.Read())
+                if (o == 1)
                 {
-                    email = reader["email"].ToString();
-                }
-                reader.Close();
+                    string email = "";
+                    command.CommandText = "SELECT email FROM `user` WHERE idUser =" + idUser;
+                    reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        email = reader["email"].ToString();
+                    }
+                    reader.Close();
 
-                string title = "";
-                command.CommandText = "SELECT titre FROM `ouvrage` WHERE idOuvrage =" + idOuvrage;
-                reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    title = reader["titre"].ToString();
+                    string title = "";
+                    command.CommandText = "SELECT titre FROM `ouvrage` WHERE idOuvrage =" + idOuvrage;
+                    reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        title = reader["titre"].ToString();
+                    }
+                    reader.Close();
+                    OnremiseEmailSent(email, title);
+                    command.CommandText = "DELETE FROM liste_attente WHERE idUser = " + idUser + " AND idOuvrage = " + idOuvrage;
+                    command.ExecuteNonQuery();
                 }
-                reader.Close();
-                OnremiseEmailSent(email, title);
-                command.CommandText = "DELETE FROM liste_attente WHERE idUser = " + idUser + " AND idOuvrage = " + idOuvrage;
-                command.ExecuteNonQuery();
-
             }
             conn.Close();
             return ok;
@@ -453,6 +466,82 @@ namespace LibraryBackgroundService
                 return true;
             else
                 return false;
+        }
+
+        public List<string[]> bookListSearch(string i, string search)
+        {
+            List<string[]> list = new List<string[]>();
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            int j = Int32.Parse(i);
+            switch (j)
+            {   //search by title
+                case 1:
+                    {
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE `titre` LIKE '%" + search + "%'";
+                        MySqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            string[] line = new string[7];
+                            line[0] = reader["idOuvrage"].ToString();
+                            line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
+                            list.Add(line);
+                        }
+                        break;
+                    }
+                //search by author
+                case 2:
+                    {
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE auteur LIKE '%" + search + "%'";
+                        MySqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            string[] line = new string[7];
+                            line[0] = reader["idOuvrage"].ToString();
+                            line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
+                            list.Add(line);
+                        }
+                        break;
+                    }
+                //search by keywords
+                case 3:
+                    {
+                        command.CommandText = "SELECT * FROM `ouvrage` WHERE MATCH (description) AGAINST('" + search + "')";
+                        MySqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            string[] line = new string[7];
+                            line[0] = reader["idOuvrage"].ToString();
+                            line[1] = reader["titre"].ToString();
+                            line[2] = reader["auteur"].ToString();
+                            line[3] = reader["theme"].ToString();
+                            line[4] = reader["nbrExemplaire"].ToString();
+                            line[5] = reader["nbrExemplaireEmp"].ToString();
+                            line[6] = reader["description"].ToString();
+                            list.Add(line);
+                        }
+                        break;
+                    }
+                default: break;
+            }
+            conn.Close();
+            return list;
         }
 
         protected virtual void OnremiseEmailSent(string email, string title)

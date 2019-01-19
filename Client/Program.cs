@@ -15,7 +15,12 @@ namespace Client
         static void Main(string[] args)
         {
             TcpChannel chl = new TcpChannel();
-            ChannelServices.RegisterChannel(chl, false);
+            String name = chl.ChannelName.ToString();
+            IChannel[] myIChannelArray = ChannelServices.RegisteredChannels;
+            if (myIChannelArray.Length>0 && myIChannelArray[0].ChannelName.ToString() == name){
+                Console.WriteLine("exist");
+            }
+            else Console.WriteLine("doesnt");
             ILibraryAdministrationService proxy = (ILibraryAdministrationService)Activator.GetObject(typeof(ILibraryAdministrationService),
                  "tcp://localhost:1234/objLibraryAdministration");
             //Console.WriteLine("Add a book?");
@@ -57,7 +62,7 @@ namespace Client
             //Console.WriteLine("result: " +proxy.login("admin@universite2.dz", "adminadmin"));
             //Console.WriteLine("reserver 1234: " + proxy.reserver(1, 1, 1234));
             //Console.WriteLine("reserver 123: " + proxy.reserver(1, 1, 1234));
-            Console.WriteLine("remise 123 1: " + proxy.remise(1,1,123));
+            //Console.WriteLine("remise 123 1: " + proxy.remise(1,1,123));
             Console.WriteLine("done!");
             Console.ReadLine();
         }
